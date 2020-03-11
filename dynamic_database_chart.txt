@@ -1,0 +1,102 @@
+
+
+=================================================java script============================================================================
+<script>
+window.onload = function () {
+			
+var chart = new CanvasJS.Chart("chartContainer", {
+	title: {
+		text: "Pollutant Level in a City"
+	},
+	axisY: {
+		title: "Concentration (in µg/m3)"
+	},
+	data: [{
+		type: "column",
+		yValueFormatString: "#,##0.00 µg/m3",
+		indexLabel: "{y}",
+		dataPoints: @Html.Raw(ViewBag.DataPoints)
+	}]
+});
+			
+function updateChart() {
+	var deltaY, yVal;
+	var dps = chart.options.data[0].dataPoints;
+	for (var i = 0; i < dps.length; i++) {
+		deltaY = (1 + Math.random() * (-1 - 1)) * 0.1 * dps[i].y;
+		yVal = deltaY + dps[i].y > 0 ? dps[i].y + deltaY : 0;
+		dps[i].y = yVal;
+	}
+	chart.options.data[0].dataPoints = dps;
+	chart.render();
+};
+updateChart();
+ 
+setInterval(function () { updateChart() }, 2000);
+ 
+}
+=================================================================end ===================================================================
+======================asp.net mvc controller==================================================================================================================
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Asp.net_demo.Models;
+using Newtonsoft.Json;
+
+namespace Asp.net_demo.Controllers
+{
+    public class HomeController : Controller
+    {
+        public ActionResult ChartTEst()
+        {
+            ViewBag.Title = "Home Page";
+            List<DataPoint> dataPoints = new List<DataPoint>();
+
+            dataPoints.Add(new DataPoint("NO2", 64));
+            dataPoints.Add(new DataPoint("PM10", 80));
+            dataPoints.Add(new DataPoint("O3", 32));
+            dataPoints.Add(new DataPoint("NH3", 3));
+            dataPoints.Add(new DataPoint("SO2", 8));
+            dataPoints.Add(new DataPoint("CO", 22));
+            dataPoints.Add(new DataPoint("PM2.5", 79));
+
+            ViewBag.DataPoints = JsonConvert.SerializeObject(dataPoints);
+
+            return View();
+        }
+    }
+}
+====================================================================asp.net mvc models==================================================
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Runtime.Serialization;
+
+namespace Asp.net_demo.Models
+{
+    [DataContract]
+    public class DataPoint
+    {
+        public DataPoint(string label, dynamic y)
+        {
+            this.Label = label;
+            this.Y = y;
+        }
+
+        //Explicitly setting the name to be used while serializing to JSON.
+        [DataMember(Name = "label")]
+        public string Label = "";
+
+        //Explicitly setting the name to be used while serializing to JSON.
+        [DataMember(Name = "y")]
+        public dynamic Y = null;
+
+
+
+
+
+    }
+}
