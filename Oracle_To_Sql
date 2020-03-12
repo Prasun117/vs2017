@@ -1,0 +1,140 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Data;
+using Oracle.ManagedDataAccess.Client;
+
+namespace SqldatabaseData
+{
+    class Program
+    {
+
+       static string oradb = "Data Source=(DESCRIPTION =" + "(ADDRESS = (PROTOCOL = TCP)(HOST = xyz)(PORT = 1571))" + "(CONNECT_DATA =" + "(SERVER = DEDICATED)" +
+              "(SERVICE_NAME =xyz)));" + "User Id=xyz;Password=xyz;";
+        static  string connstring = @"data source=.\SQLEXPRESS;initial catalog=Newdatabase;integrated security=True;";
+        public void getsqldata()
+        {
+            Console.WriteLine("the sql data form the mssql database");
+            //connection string of the database @"data source=.\SQLEXPRESS;initial catalog=Newdatabase;integrated security=True;"
+
+            SqlConnection con = new SqlConnection(connstring);
+            string query = "select * from test2";
+            SqlCommand cmd = new SqlCommand(query, con);
+
+            con.Open();
+            Console.WriteLine("connection opened successfully!");
+           
+           int n= cmd.ExecuteNonQuery();
+            Console.WriteLine("the number of rows affected {0}", n);
+
+            con.Close();
+          
+            Console.WriteLine("connection closed");
+            
+
+
+
+        }
+
+        public void showoracledata()
+        {
+            Console.WriteLine("the data from the oracle data base :");
+
+            
+            OracleConnection con = new OracleConnection(oradb);
+            string sqlcmnd = "select * from employeess";
+            con.Open();
+            OracleCommand cmnd = new Oracle.ManagedDataAccess.Client.OracleCommand(sqlcmnd, con);
+            OracleDataReader dr = cmnd.ExecuteReader();
+
+            if (dr.HasRows)
+            {
+
+                Console.WriteLine("first_name" + "     " + "last_name");
+                while (dr.Read())
+                {
+                    Console.WriteLine(dr["FIRST_NAME"].ToString() + "     " + dr["LAST_NAME"].ToString());
+
+                }
+
+
+            }
+
+            Console.WriteLine("the connection was established:{0} {1} {2}", con.ServerVersion, con.ServiceName, dr.RowSize);
+            Console.WriteLine("the connection string:{0}", con.ConnectionString);
+            con.Close();
+            Console.WriteLine("the connection was closed");
+
+            Console.ReadLine();
+
+        }
+
+
+        public void insertsql(string empid, string first_name, string last_name)
+        {
+
+            SqlConnection conn1 = new SqlConnection(connstring);
+            SqlCommand cmd = new SqlCommand("sp_insert", conn1);
+            cmd.CommandType = CommandType.StoredProcedure;
+            int n = Convert.ToInt32(empid);
+            cmd.Parameters.AddWithValue("@p_empid",empid);
+            cmd.Parameters.AddWithValue("@p_firstname", first_name);
+            cmd.Parameters.AddWithValue("@p_lastname",last_name);
+            conn1.Open();
+            int i = cmd.ExecuteNonQuery();
+            Console.WriteLine("the rows changed {0}", i);
+            conn1.Close();
+
+
+
+        }
+
+        public void oracle_to_sqldata()
+        {
+            Console.WriteLine("this method will transfer data to sql database from oracle database");
+
+            Program cs = new Program();
+            OracleConnection conn2 = new OracleConnection(oradb);
+
+            string sqlcmnd = "select * from employeess";
+            
+
+
+            
+            conn2.Open();
+
+            OracleCommand cmnd = new OracleCommand(sqlcmnd, conn2);
+            OracleDataReader dr = cmnd.ExecuteReader();
+
+
+            if (dr.HasRows)
+            {
+
+                Console.WriteLine("emp_id"+"     "+"first_name" + "     " + "last_name");
+                while (dr.Read())
+                {
+                    Console.WriteLine(dr["EMPLOYEE_ID"].ToString() +"    "+dr["FIRST_NAME"].ToString() + "     " + dr["LAST_NAME"].ToString());
+                    cs.insertsql(dr["EMPLOYEE_ID"].ToString(), dr["FIRST_NAME"].ToString(), dr["LAST_NAME"].ToString());
+
+                }
+
+
+            }
+            conn2.Close();
+            Console.WriteLine("the transection complete");
+
+        }
+
+        static void Main(string[] args)
+        {
+
+
+            Program sd = new Program();
+            sd.oracle_to_sqldata();
+            Console.ReadKey();
+        }
+    }
+}
