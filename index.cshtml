@@ -1,0 +1,150 @@
+@model IEnumerable<MvcWithDba.Models.Test3>
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<script>
+
+    function cheak(item) {
+        var classs = null;
+        if (item == "green") {
+
+            classs = "led-green";
+        }
+
+        else if (item == "yellow") {
+
+            classs = "led-yellow";
+        }
+
+        else if (item == "red") {
+            classs = "led-red";
+        }
+
+        else
+            classs = "led-blue";
+
+        return classs;
+
+    }
+
+
+
+</script>
+<link rel="stylesheet" href="~/Content/NewLed.css" />
+<link rel="stylesheet" href="~/Content/searchbox.css" />
+<h2>Process Monitering</h2>
+<script>
+    function myFunction() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for job names..">
+
+<table class="table table-bordered" id="myTable">
+    <thead>
+        <tr>
+
+            
+            <th>
+                Business_Unit
+            </th>
+            <th>
+                Job_Name
+            </th>
+            <th>
+                Scheduled_Date_Time
+            </th>
+            <th>
+                Last_Run_Date_Time
+            </th>
+            <th>
+                Next_Run_Date_Time
+            </th>
+            <th>
+                Scheduled_By_User
+            </th>
+            <th>
+                Current_Status
+            </th>
+            <th>
+                Performance
+
+            </th>
+
+            <th>
+                Parameter_s
+
+            </th>
+
+            <th>Last_3_Runs_Hours</th>
+        </tr>
+
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var emp in Model)
+        {
+
+        <tr>
+            <td>@emp.Business_Unit</td>
+            <td>@emp.Job_Name</td>
+            <td>@emp.Scheduled_Date_Time</td>
+            <td>@emp.Last_Run_Date_Time</td>
+            <td>@emp.Next_Run_Date_Time</td>
+            <td>@emp.Scheduled_By_User</td>
+            @if (emp.Current_Status == "green")
+            {
+                <td style=" border: 2px solid; font-size: 18px;text-align:center; align-content: center"><div class="led-green"></div> </td>}
+            @if (emp.Current_Status == "yellow")
+            {
+                <td style=" border: 2px solid; font-size: 18px;text-align:center; align-content: center"><div class="led-yellow"></div> </td>}
+            @if (emp.Current_Status == "red")
+            {
+                <td style=" border: 2px solid; font-size: 18px;text-align:center; align-content: center"><div class="led-red"></div> </td>}
+            @if (emp.Performance == "green")
+            {
+                <td style=" border: 2px solid; font-size: 18px;text-align:center; align-content: center"><div class="led-green"></div> </td>}
+            @if (emp.Performance == "yellow")
+            {
+                <td style=" border: 2px solid; font-size: 18px;text-align:center; align-content: center"><div class="led-yellow"></div> </td>}
+            @if (emp.Performance == "red")
+            {
+                <td style=" border: 2px solid; font-size: 18px;text-align:center; align-content: center"><div class="led-red"></div> </td>}
+
+            <td>@emp.Parameter_s</td>
+            <td>@emp.Last_3_Runs_Hours</td>
+
+
+        </tr>
+
+
+
+        }
+
+
+    </tbody>
+
+
+
+
+</table>
+
